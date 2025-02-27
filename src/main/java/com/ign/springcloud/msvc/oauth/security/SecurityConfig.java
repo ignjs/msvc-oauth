@@ -4,15 +4,14 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.time.Duration;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +34,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
@@ -82,21 +82,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /* @Bean
-    UserDetailsService userDetailsService() {
-        UserDetails userDetails = User.builder()
-                .username("ignacio")
-                .password("{noop}123456")
-                .roles("USER")
-                .build();
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("{noop}123456")
-                .roles("USER", "ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(userDetails, admin);
-    } */
+    /*
+     * @Bean
+     * UserDetailsService userDetailsService() {
+     * UserDetails userDetails = User.builder()
+     * .username("ignacio")
+     * .password("{noop}123456")
+     * .roles("USER")
+     * .build();
+     * UserDetails admin = User.builder()
+     * .username("admin")
+     * .password("{noop}123456")
+     * .roles("USER", "ADMIN")
+     * .build();
+     * 
+     * return new InMemoryUserDetailsManager(userDetails, admin);
+     * }
+     */
 
     @Bean
     RegisteredClientRepository registeredClientRepository() {
@@ -111,6 +113,8 @@ public class SecurityConfig {
                 .postLogoutRedirectUri("http://127.0.0.1:8090/logout")
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
+                .tokenSettings(TokenSettings.builder().accessTokenTimeToLive(Duration.ofSeconds(900))
+                        .refreshTokenTimeToLive(Duration.ofSeconds(900)).build())
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(false).build())
                 .build();
 
