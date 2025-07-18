@@ -17,6 +17,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.ign.libs.msvc.commons.entity.User;
 
+import io.micrometer.tracing.Tracer;
+
 import org.springframework.http.MediaType;
 
 @Service
@@ -26,6 +28,9 @@ public class UsersService implements UserDetailsService {
 
     @Autowired
     private WebClient client;
+
+    @Autowired
+    private Tracer tracer;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -42,10 +47,12 @@ public class UsersService implements UserDetailsService {
                     .map(role -> new SimpleGrantedAuthority(role.getName()))
                     .collect(Collectors.toList());
                     log.info("User found: " + user.getUsername());
+                    tracer.currentSpan().tag("user.login.username", user.getUsername());
             return new org.springframework.security.core.userdetails.User(
                     user.getUsername(), user.getPassword(), user.isEnabled(), true, true, true, authorities);
         } catch (Exception e) {
             log.error("User not found: " + username);
+            tracer.currentSpan().tag("error.login.message", "User not found: " + username);
             throw new UsernameNotFoundException("User not found");
         }
     }

@@ -47,6 +47,7 @@ El proyecto [msvc-oauth](http://_vscodecontentref_/2) utiliza las siguientes dep
 - **Spring Boot DevTools**: Herramientas de desarrollo para Spring Boot.
 - **Spring Boot Starter Test**: Dependencias para pruebas en Spring Boot.
 - **Reactor Test**: Herramientas de prueba para Reactor.
+- **Spring Cloud Starter Zipkin**: Para trazabilidad distribuida con Zipkin.
 
 ## Configuración
 
@@ -57,6 +58,15 @@ El archivo de configuración principal se encuentra en `src/main/resources/appli
 - [java](http://_vscodecontentref_/3): Contiene el código fuente del proyecto.
 - [resources](http://_vscodecontentref_/4): Contiene los archivos de configuración y recursos estáticos.
 - [pom.xml](http://_vscodecontentref_/5): Archivo de configuración de Maven.
+
+## Trazabilidad con Zipkin
+
+El proyecto utiliza Zipkin para la trazabilidad distribuida de las solicitudes entre microservicios.  
+Para ejecutar Zipkin usando MySQL como almacenamiento, utiliza el siguiente comando:
+
+```sh
+STORAGE_TYPE=mysql MYSQL_USER=zipkin MYSQL_PASS=zipkin java -jar zipkin.jar
+```
 
 ## Contribuciones
 
